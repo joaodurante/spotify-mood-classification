@@ -2,20 +2,8 @@ import spotipy
 import pandas as pd
 import math
 import json
+import constants
 
-PLAYLISTS_FILE_PATH = 'playlists.json'
-AUDIO_FEATURES_PROPERTIES = [
-    'acousticness', 
-    'danceability', 
-    'duration_ms',
-    'energy',
-    'instrumentalness',
-    'liveness',
-    'loudness',
-    'speechiness',
-    'tempo',
-    'valence'
-]
 
 def authenticate_and_instantiate():
     token = spotipy.util.prompt_for_user_token(
@@ -64,9 +52,7 @@ def get_tracks_audio_features(spotifyInstance, track_list):
         track_features_list += features
     
     track_features_df = pd.DataFrame(track_features_list)
-    # columns_to_remove = [i for i in track_features_df.columns if i not in AUDIO_FEATURES_PROPERTIES]
-    # track_features_df.drop(columns_to_remove, index=1)
-    return track_features_df[AUDIO_FEATURES_PROPERTIES]
+    return track_features_df[constants.AUDIO_FEATURES_PROPERTIES]
 
 def export_track_features_to_csv():
     """
@@ -74,7 +60,7 @@ def export_track_features_to_csv():
     """
     df = pd.DataFrame()
     spotifyInstance = authenticate_and_instantiate()
-    file = open(PLAYLISTS_FILE_PATH)
+    file = open(constants.PLAYLISTS_FILE_PATH)
     playlists = json.load(file)
 
     for mood, urls in playlists.items():
@@ -87,6 +73,6 @@ def export_track_features_to_csv():
             features['mood'] = mood
             df = pd.concat([df, features])
     
-    df.to_csv('track_features.csv')
+    df.to_csv(constants.DATASET_FILE_NAME)
 
 export_track_features_to_csv()

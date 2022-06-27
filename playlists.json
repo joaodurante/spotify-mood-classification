@@ -1,5 +1,18 @@
 {
     "happy": [
-        "https://open.spotify.com/playlist/1foQEwosjKm0uQ6yJtGm6M?si=44f189409d124250"
+        "https://open.spotify.com/playlist/6hXwzaSaiiWUazPjpQn0Yl?si=ec018c02a36a4ead",
+        "https://open.spotify.com/playlist/7vBShQfXqgKHshNTD9JnWQ?si=6375dae615a04937"
+    ],
+    "aggressive": [
+        "https://open.spotify.com/playlist/3cJ5gvdS3n8dy8t8Ui1nS0?si=feebadcdd40d4909",
+        "https://open.spotify.com/playlist/3zGxnE3zuVDPH9o4HpMbZE?si=a18782b918b04a80"
+    ],
+    "sad": [
+        "https://open.spotify.com/playlist/6nxPNnmSE0d5WlplUsa5L3?si=d5ebca9d88e54fa6",
+        "https://open.spotify.com/playlist/37i9dQZF1DX7qK8ma5wgG1?si=e30ae07632564495"
+    ],
+    "calm": [
+        "https://open.spotify.com/playlist/4D3hxAbOjVu5jaC5Bnlmky?si=7a3a6e8f01464ef7",
+        "https://open.spotify.com/playlist/1r4hnyOWexSvylLokn2hUa?si=9aa2e180f46d40f7"
     ]
 }
