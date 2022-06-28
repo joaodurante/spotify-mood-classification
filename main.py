@@ -1,11 +1,12 @@
 import os.path
 import pandas as pd
-import numpy as np
 from spotifyservice import export_track_features_to_csv
 import constants
-import math
+import matplotlib
+matplotlib.use('WebAgg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pickle
 
 # sklearn imports
 from sklearn.preprocessing import StandardScaler, LabelEncoder
@@ -22,22 +23,22 @@ def import_data():
 
     return pd.read_csv(constants.DATASET_FILE_NAME)
 
-
 # split the dataset into training and test sets (75% training, 25% tests)
-def split_in_train_test_data(tracks):
+def split_in_train_test_data(X, Y):
     return train_test_split(
-        tracks[constants.AUDIO_FEATURES_PROPERTIES], 
-        tracks['mood'], 
+        X, 
+        Y, 
         test_size=0.25, 
         random_state = 0, 
-        stratify=tracks['mood']
+        stratify=Y
     )
 
-def plotConfusionMatrix(testY, predsY, target):
-    confusionMatrix = confusion_matrix(testY, predsY)
+# plot the confusion matrix
+def plot_confusion_matrix(testY, predsY, target):
+    labels = target.drop_duplicates().tolist()
+    confusionMatrix = confusion_matrix(testY, predsY, labels=labels)
     ax = plt.subplot()
     sns.heatmap(confusionMatrix,annot=True,ax=ax)
-    labels = target['mood'].tolist()
     ax.set_xlabel('Predicted labels')
     ax.set_ylabel('True labels')
     ax.set_title('Confusion Matrix')
@@ -45,57 +46,28 @@ def plotConfusionMatrix(testY, predsY, target):
     ax.yaxis.set_ticklabels(labels)
     plt.show()
 
-def create_encoded_target_df(Y):
-    # encode our labels (moods)
-    encoder = LabelEncoder()
-    encoder.fit(Y)
-    encoded_y = encoder.transform(Y)
-
-    target = pd.DataFrame()
-    target['mood'] = Y.tolist()
-    target['encode'] = encoded_y
-    return target.drop_duplicates().sort_values(['encode'])
-
-
 # import the data
 df = import_data()
 X = df[constants.AUDIO_FEATURES_PROPERTIES]
 Y = df['mood']
 
 # preprocessing/normalize our data
-trainScaled = StandardScaler().fit_transform(X)
+scaled = StandardScaler().fit_transform(X)
 
 # split our data in training and tests sets (75% training, 25% tests)
-trainX, testX, trainY, testY = split_in_train_test_data(trainScaled)
-
-# dataframe containing our targets (moods) encoded
-target = create_encoded_target_df()
+trainX, testX, trainY, testY = split_in_train_test_data(scaled, df['mood'])
 
 # instantiate and train using LogisticRegression
 logRegression = LogisticRegression(max_iter=2000)
 logRegression.fit(trainX, trainY)
-predsY = logRegression.predict(trainX)
-print(accuracy_score(trainY, predsY))
+predsY = logRegression.predict(testX)
+predsDf = pd.Series(predsY).groupby(predsDf).size().reset_index().values.tolist()
+print(predsDf)
 
-# print cross_val_score mean from the previous (logistic regression) results
-scores = cross_val_score(logRegression, trainX, trainY, cv=5)
-print(scores.mean())
+# das 50 musicas happy, avaliou-se 45 happy, 1 aggressive e 4 sads
+# das 50 agressivas, avaliou-se 34 aggressives, 7 sads e 9 calms
+# das 50 sads, 8 happy, 1 aggressive, 39 sads e 2 calms
+# das 43 calms, 6 aggressive, 4 sads e 33 calms
+print(accuracy_score(testY, predsY))
+plot_confusion_matrix(testY, predsY, df['mood'])
 
-
-params = {"C" : np.logspace(-6, 3, 10)}
-clf = GridSearchCV(logRegression, params)
-clf.fit(trainScaled, trainY)
-print (clf.best_estimator_.C)
-print (clf.best_score_)
-
-logreg = LogisticRegression(max_iter=2000, C=0.1)
-logreg.fit(trainScaled, trainY)
-preds = clf.predict(test_scaled)
-print (accuracy_score(preds, testY))
-
-fi = pd.DataFrame(clf.best_estimator_.coef_, columns=constants.AUDIO_FEATURES_PROPERTIES)
-pow(math.e, fi)
-fo = fi.set_axis(logreg.classes_, axis=0)
-fo.idxmax(axis=1)
-
-print(fo)
