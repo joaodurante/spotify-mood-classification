@@ -6,7 +6,6 @@ import matplotlib
 matplotlib.use('WebAgg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pickle
 
 # sklearn imports
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -56,6 +55,20 @@ def plot_confusion_matrix(chartTitle, testY, predsY, target):
     ax.yaxis.set_ticklabels(labels)
     plt.show()
 
+# plot the bar chart of predicts results
+def plot_results(predsLogReg, predsGradBoost):
+    dataLogReg = {i[0]: i[1] for i in predsLogReg}
+    dataGradBoost = {i[0]: i[1] for i in predsGradBoost}
+
+    _, ax = plt.subplots(1, 2)
+
+    ax[0].bar(dataLogReg.keys(), dataLogReg.values())
+    ax[0].set_title('Logistic Regression Results')
+    
+    ax[1].bar(dataGradBoost.keys(), dataGradBoost.values())
+    ax[1].set_title('Gradient Boosting Results')
+
+    plt.show()
 
 
 # import the data
@@ -75,27 +88,29 @@ print('LogisticRegression', accuracy_score(testY, predsY))
 
 
 # instantiate and train using GradientBoosting
-gradBoosting = GradientBoostingClassifier()
+# gradBoosting = GradientBoostingClassifier()                                                   # GradientBoosting 0.7357512953367875
+gradBoosting = GradientBoostingClassifier(learning_rate=0.05, max_depth=4, n_estimators=100)    # GradientBoosting 
 gradBoosting.fit(trainX, trainY)
 predsY = gradBoosting.predict(testX)
 predsResult = pd.Series(predsY)
 predsResult = predsResult.groupby(predsResult).size().reset_index().values.tolist()
 print('GradientBoosting', accuracy_score(testY, predsY))
-# plot_confusion_matrix('GradientBoosting Confusion Matrix', testY, predsY, df['mood'])
+# plot_confusion_matrix('GradientBoosting Confusion Matrix', testY, predsY, Y)
 
 
 
-# userPlaylistId = input("Please provide your playlist url: ")
-# userPlaylistId = 'https://open.spotify.com/playlist/4mfobAcyw052F12K4vwtoW?si=db57e591a0404e67'   # calm
-# userPlaylistId = 'https://open.spotify.com/playlist/0IAG5sPikOCo5nvyKJjCYo?si=4c5019d5032c4a1b'   # happy
-# userPlaylistId = 'https://open.spotify.com/playlist/69SjVFpFkgTIpsuZWGZN6r?si=e9cb0c86cae64847'   # aggressive
-# userPlaylistId = 'https://open.spotify.com/playlist/14qQx1Xfrv874K6GC9kKNd?si=2e667e78be5044b7'   # sad
-
+userPlaylistId = input("Please provide your playlist url: ")
 userTrackFeatures = spotifyService.get_track_feature_from_user_playlist(userPlaylistId)
 userTrackFeaturesList = userTrackFeatures[constants.AUDIO_FEATURES_PROPERTIES].values.tolist()
 scaled = MinMaxScaler().fit_transform(userTrackFeaturesList)
-userPredsY = logRegression.predict(scaled)
-predsResult = pd.Series(userPredsY)
-predsResult = predsResult.groupby(predsResult).size().reset_index().values.tolist()
-print(predsResult)
 
+userPredsY = logRegression.predict(scaled)
+logPredsResult = pd.Series(userPredsY)
+logPredsResult = logPredsResult.groupby(logPredsResult).size().reset_index().values.tolist()
+
+userPredsY = gradBoosting.predict(scaled)
+gradPredsResult = pd.Series(userPredsY)
+gradPredsResult = gradPredsResult.groupby(gradPredsResult).size().reset_index().values.tolist()
+
+
+plot_results(logPredsResult, gradPredsResult)
