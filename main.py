@@ -78,7 +78,7 @@ trainX, testX, trainY, testY = split_in_train_test_data(X, Y)
 
 
 # instantiate and train using LogisticRegression
-logRegression = LogisticRegression(max_iter=2000)
+logRegression = LogisticRegression(C=10, penalty='l2', solver='lbfgs', max_iter=1000)
 logRegression.fit(trainX, trainY)
 predsY = logRegression.predict(testX)
 predsResult = pd.Series(predsY)
@@ -88,7 +88,6 @@ print('LogisticRegression', accuracy_score(testY, predsY))
 
 
 # instantiate and train using GradientBoosting
-# gradBoosting = GradientBoostingClassifier()                                                   # GradientBoosting 0.7357512953367875
 gradBoosting = GradientBoostingClassifier(learning_rate=0.05, max_depth=4, n_estimators=100)    # GradientBoosting 
 gradBoosting.fit(trainX, trainY)
 predsY = gradBoosting.predict(testX)
@@ -99,7 +98,12 @@ print('GradientBoosting', accuracy_score(testY, predsY))
 
 
 
-userPlaylistId = input("Please provide your playlist url: ")
+# userPlaylistId = input("Please provide your playlist url: ")
+userPlaylistId = 'https://open.spotify.com/playlist/0IAG5sPikOCo5nvyKJjCYo?si=4c5019d5032c4a1b'   # happy
+# userPlaylistId = 'https://open.spotify.com/playlist/4mfobAcyw052F12K4vwtoW?si=db57e591a0404e67'   # calm
+# userPlaylistId = 'https://open.spotify.com/playlist/69SjVFpFkgTIpsuZWGZN6r?si=e9cb0c86cae64847'   # aggressive
+# userPlaylistId = 'https://open.spotify.com/playlist/14qQx1Xfrv874K6GC9kKNd?si=2e667e78be5044b7'   # sad
+
 userTrackFeatures = spotifyService.get_track_feature_from_user_playlist(userPlaylistId)
 userTrackFeaturesList = userTrackFeatures[constants.AUDIO_FEATURES_PROPERTIES].values.tolist()
 scaled = MinMaxScaler().fit_transform(userTrackFeaturesList)
@@ -113,4 +117,4 @@ gradPredsResult = pd.Series(userPredsY)
 gradPredsResult = gradPredsResult.groupby(gradPredsResult).size().reset_index().values.tolist()
 
 
-plot_results(logPredsResult, gradPredsResult)
+# plot_results(logPredsResult, gradPredsResult)
