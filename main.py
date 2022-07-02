@@ -43,14 +43,15 @@ def split_in_train_test_data(X, Y):
     )
 
 # plot the confusion matrix
-def plot_confusion_matrix(chartTitle, testY, predsY, target):
+def plot_confusion_matrix(chartTitle, chartSubtitle, testY, predsY, target):
     labels = target.drop_duplicates().tolist()
     confusionMatrix = confusion_matrix(testY, predsY, labels=labels)
     ax = plt.subplot()
     sns.heatmap(confusionMatrix,annot=True,ax=ax)
     ax.set_xlabel('Predicted labels')
     ax.set_ylabel('True labels')
-    ax.set_title(chartTitle)
+    plt.suptitle(chartTitle, fontsize=18)
+    plt.title('Accuracy: {:.6f}'.format(chartSubtitle), fontsize=10)
     ax.xaxis.set_ticklabels(labels)
     ax.yaxis.set_ticklabels(labels)
     plt.show()
@@ -83,8 +84,7 @@ logRegression.fit(trainX, trainY)
 predsY = logRegression.predict(testX)
 predsResult = pd.Series(predsY)
 predsResult = predsResult.groupby(predsResult).size().reset_index().values.tolist()
-print('LogisticRegression', accuracy_score(testY, predsY))
-# plot_confusion_matrix('LogisticRegression Confusion Matrix', testY, predsY, Y)
+plot_confusion_matrix('LogisticRegression Confusion Matrix', accuracy_score(testY, predsY), testY, predsY, Y)
 
 
 # instantiate and train using GradientBoosting
@@ -93,9 +93,7 @@ gradBoosting.fit(trainX, trainY)
 predsY = gradBoosting.predict(testX)
 predsResult = pd.Series(predsY)
 predsResult = predsResult.groupby(predsResult).size().reset_index().values.tolist()
-print('GradientBoosting', accuracy_score(testY, predsY))
-# plot_confusion_matrix('GradientBoosting Confusion Matrix', testY, predsY, Y)
-
+plot_confusion_matrix('GradientBoosting Confusion Matrix', accuracy_score(testY, predsY), testY, predsY, Y)
 
 
 # userPlaylistId = input("Please provide your playlist url: ")
