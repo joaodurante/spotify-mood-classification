@@ -88,7 +88,7 @@ plot_confusion_matrix('LogisticRegression Confusion Matrix', accuracy_score(test
 
 
 # instantiate and train using GradientBoosting
-gradBoosting = GradientBoostingClassifier(learning_rate=0.05, max_depth=4, n_estimators=100)    # GradientBoosting 
+gradBoosting = GradientBoostingClassifier(learning_rate=0.05, max_depth=4, n_estimators=100) 
 gradBoosting.fit(trainX, trainY)
 predsY = gradBoosting.predict(testX)
 predsResult = pd.Series(predsY)
