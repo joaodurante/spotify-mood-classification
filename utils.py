@@ -22,19 +22,19 @@ trainX, testX, trainY, testY = train_test_split(X, Y, test_size=0.25, random_sta
 
 def check_learning_gb_rate():
     parameters = {
-        'learning_rate': [0.05, 0.075, 0.1],
+        'learning_rate': [0.01, 0.025, 0.05, 0.075, 0.1],
         'n_estimators' : [100,500,1000],
         'max_depth'    : [2,4,8]
     }
 
     model = GradientBoostingClassifier()
-    gridGradBoosting = GridSearchCV(estimator=model, param_grid = parameters, cv = 5, n_jobs=-1)
+    gridGradBoosting = GridSearchCV(estimator=model, param_grid = parameters, cv = 2, n_jobs=-1)
     gridGradBoosting.fit(trainX, trainY)
 
-    print(" Results from Grid Search " )
-    print("\n The best estimator across ALL searched params:\n",gridGradBoosting.best_estimator_)
-    print("\n The best score across ALL searched params:\n",gridGradBoosting.best_score_)
-    print("\n The best parameters across ALL searched params:\n",gridGradBoosting.best_params_)
+    print("GridSearch Results (GradientBoosting)")
+    print("\nBest estimator:\n",gridGradBoosting.best_estimator_)
+    print("\nBest score:\n",gridGradBoosting.best_score_)
+    print("\nBest parameters:\n",gridGradBoosting.best_params_)
 
 def check_learning_lr_rate():
     parameters = {
@@ -48,11 +48,10 @@ def check_learning_lr_rate():
     gridLogRegression = GridSearchCV(estimator=model, param_grid = parameters, cv = 2, n_jobs=-1)
     gridLogRegression.fit(trainX, trainY)
 
-    print(" Results from Grid Search " )
-    print("\n The best estimator across ALL searched params:\n",gridLogRegression.best_estimator_)
-    print("\n The best score across ALL searched params:\n",gridLogRegression.best_score_)
-    print("\n The best parameters across ALL searched params:\n",gridLogRegression.best_params_)
-
+    print("GridSearch Results (LogisticRegression)")
+    print("\nBest estimator:\n",gridLogRegression.best_estimator_)
+    print("\nBest score:\n",gridLogRegression.best_score_)
+    print("\nBest parameters:\n",gridLogRegression.best_params_)
 
 
 # check_learning_lr_rate()
