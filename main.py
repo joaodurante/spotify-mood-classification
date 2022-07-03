@@ -8,10 +8,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # sklearn imports
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
-from sklearn.model_selection import cross_val_score, cross_val_predict, train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import GradientBoostingClassifier
 
 # create SpotifyService instance
@@ -95,24 +95,19 @@ predsResult = pd.Series(predsY)
 predsResult = predsResult.groupby(predsResult).size().reset_index().values.tolist()
 plot_confusion_matrix('GradientBoosting Confusion Matrix', accuracy_score(testY, predsY), testY, predsY, Y)
 
+while True:
+    userPlaylistId = input("Please provide your playlist url: ")
+    userTrackFeatures = spotifyService.get_track_feature_from_user_playlist(userPlaylistId)
+    userTrackFeaturesList = userTrackFeatures[constants.AUDIO_FEATURES_PROPERTIES].values.tolist()
+    scaled = MinMaxScaler().fit_transform(userTrackFeaturesList)
 
-# userPlaylistId = input("Please provide your playlist url: ")
-userPlaylistId = 'https://open.spotify.com/playlist/0IAG5sPikOCo5nvyKJjCYo?si=4c5019d5032c4a1b'   # happy
-# userPlaylistId = 'https://open.spotify.com/playlist/4mfobAcyw052F12K4vwtoW?si=db57e591a0404e67'   # calm
-# userPlaylistId = 'https://open.spotify.com/playlist/69SjVFpFkgTIpsuZWGZN6r?si=e9cb0c86cae64847'   # aggressive
-# userPlaylistId = 'https://open.spotify.com/playlist/14qQx1Xfrv874K6GC9kKNd?si=2e667e78be5044b7'   # sad
+    userPredsY = logRegression.predict(scaled)
+    logPredsResult = pd.Series(userPredsY)
+    logPredsResult = logPredsResult.groupby(logPredsResult).size().reset_index().values.tolist()
 
-userTrackFeatures = spotifyService.get_track_feature_from_user_playlist(userPlaylistId)
-userTrackFeaturesList = userTrackFeatures[constants.AUDIO_FEATURES_PROPERTIES].values.tolist()
-scaled = MinMaxScaler().fit_transform(userTrackFeaturesList)
-
-userPredsY = logRegression.predict(scaled)
-logPredsResult = pd.Series(userPredsY)
-logPredsResult = logPredsResult.groupby(logPredsResult).size().reset_index().values.tolist()
-
-userPredsY = gradBoosting.predict(scaled)
-gradPredsResult = pd.Series(userPredsY)
-gradPredsResult = gradPredsResult.groupby(gradPredsResult).size().reset_index().values.tolist()
+    userPredsY = gradBoosting.predict(scaled)
+    gradPredsResult = pd.Series(userPredsY)
+    gradPredsResult = gradPredsResult.groupby(gradPredsResult).size().reset_index().values.tolist()
 
 
-# plot_results(logPredsResult, gradPredsResult)
+    plot_results(logPredsResult, gradPredsResult)
