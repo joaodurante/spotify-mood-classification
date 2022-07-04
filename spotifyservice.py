@@ -14,7 +14,7 @@ class SpotifyService:
             scope='user-library-read',
             client_id='a5646fd64ee74edabc2781812067f237',
             client_secret='f2633dc8c0c241c0a93b6688edaabdc6',
-            redirect_uri='http://localhost:5000'
+            redirect_uri='http://localhost:8888/callback/'
         )
 
         return spotipy.Spotify(auth=token, requests_timeout=20)
