@@ -3,21 +3,15 @@ import pandas as pd
 import math
 import json
 import constants
+from spotipy.oauth2 import SpotifyClientCredentials
 
 class SpotifyService:
     def __init__(self):
         self.instance = self.authenticate_and_instantiate()
 
     def authenticate_and_instantiate(self):
-        token = spotipy.util.prompt_for_user_token(
-            username='12165639406', 
-            scope='user-library-read',
-            client_id='a5646fd64ee74edabc2781812067f237',
-            client_secret='f2633dc8c0c241c0a93b6688edaabdc6',
-            redirect_uri='http://localhost:8888/callback/'
-        )
-
-        return spotipy.Spotify(auth=token, requests_timeout=20)
+        client_credentials_manager = SpotifyClientCredentials(client_id=constants.CLIENT_ID, client_secret=constants.CLIENT_SECRET)
+        return spotipy.Spotify(client_credentials_manager=client_credentials_manager, requests_timeout=30)
 
     def get_track_ids_from_playlist(self, playlist_url):
         """
